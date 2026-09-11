@@ -1,5 +1,5 @@
 (function () {
-  var B = window.PCBank, S = window.PCScoring;
+  var B = window.PCBank, S = window.PCScoring, C = window.PCCompare;
   var AXES = B.AXES, LENGTHS = B.LENGTHS, AXIS_KEYS = S.AXIS_KEYS;
   var $ = function (id) { return document.getElementById(id); };
 
@@ -7,7 +7,7 @@
 
   /* ---------------- routing ---------------- */
   function show(view) {
-    ['home', 'test', 'results', 'method'].forEach(function (v) {
+    ['home', 'test', 'results', 'method', 'figures'].forEach(function (v) {
       $('view-' + v).classList.toggle('hidden', v !== view);
     });
     window.scrollTo(0, 0);
@@ -15,10 +15,15 @@
   function route() {
     var h = location.hash || '';
     if (h === '#method') { renderMethod(); show('method'); return; }
+    if (h.indexOf('#figures') === 0) {
+      var fp = new URLSearchParams(h.slice(h.indexOf('?') + 1));
+      if (h.indexOf('?') > 0 && fp.get('c') !== null) syncSelection(fp.get('c'));
+      renderFigures(); show('figures'); return;
+    }
     if (h.indexOf('#r?') === 0) {
       var p = new URLSearchParams(h.slice(3));
       var t = p.get('t'), a = S.decode(p.get('a') || '');
-      if (LENGTHS[t] && a) { state.length = t; state.answers = a; renderResults(); show('results'); return; }
+      if (LENGTHS[t] && a) { state.length = t; state.answers = a; syncSelection(p.get('c') || ''); renderResults(); show('results'); return; }
     }
     show('home');
   }
@@ -29,6 +34,7 @@
     var nav = el.getAttribute('data-nav');
     if (nav === 'home') { location.hash = ''; show('home'); }
     else if (nav === 'method') { location.hash = '#method'; }
+    else if (nav === 'figures') { location.hash = '#figures' + (C.selectedIds().length ? '?c=' + C.selectedIds().join(',') : ''); }
   });
   window.addEventListener('hashchange', route);
 
@@ -159,29 +165,53 @@
 
     $('rlink').value = location.href;
     $('rreviewbox').classList.add('hidden'); $('rreviewbox').innerHTML = '';
+    try { localStorage.setItem('pc_last', location.hash); } catch (e) {}
+    renderCompare();
+  }
+
+  /* ---------------- compare ---------------- */
+  function userVec() {
+    var res = S.score(state.answers);
+    var v = AXIS_KEYS.map(function (ax) { return res.axes[ax].score; });
+    if (v.some(function (x) { return x === null; })) return null;
+    return { pos: v, link: location.hash.indexOf('#r?') === 0 ? location.hash : null };
+  }
+  /* Keep built-in selections in step with the URL without dropping AI estimates held in memory. */
+  function syncSelection(csv) {
+    var want = (csv || '').split(',').filter(Boolean).join(',');
+    if (want !== C.selectedIds().join(',')) {
+      var ai = C.state.selected.filter(function (f) { return f.ai; });
+      C.setFromIds(want);
+      ai.forEach(function (f) { if (C.state.selected.length < 6) C.state.selected.push(f); });
+    }
+  }
+  function writeSelectionToHash() {
+    var h = location.hash.replace(/([?&])c=[^&]*/, '$1').replace(/[?&]$/, '');
+    var ids = C.selectedIds();
+    if (ids.length) h += (h.indexOf('?') >= 0 ? '&' : '?') + 'c=' + ids.join(',');
+    history.replaceState(null, '', location.pathname + h);
+    if ($('rlink')) $('rlink').value = location.href;
+  }
+  function renderCompare() {
+    C.render($('rcompare'), userVec(), function () { writeSelectionToHash(); renderCompare(); });
+  }
+  function renderFigures() {
+    var u = null;
+    try {
+      var last = localStorage.getItem('pc_last');
+      if (last && last.indexOf('#r?') === 0) {
+        var p = new URLSearchParams(last.slice(3)), a = S.decode(p.get('a') || '');
+        if (a) { var res = S.score(a), v = AXIS_KEYS.map(function (ax) { return res.axes[ax].score; }); if (!v.some(function (x) { return x === null; })) u = { pos: v, link: last }; }
+      }
+    } catch (e) {}
+    C.renderGallery($('view-figures'), u, function () {
+      writeSelectionToHash();
+      if (u) { var ids = C.selectedIds(); u.link = last.replace(/([?&])c=[^&]*/, '$1').replace(/[?&]$/, '') + (ids.length ? '&c=' + ids.join(',') : ''); var a = document.querySelector('#view-figures a.btn.primary'); if (a) a.href = u.link; }
+    });
   }
 
   function drawCompass(econ, auth) {
-    var svg = $('rcompass'), W = 320, P = 30, inner = W - 2 * P;
-    var q = function (x, y, w, h, c) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + c + '" opacity=".18"/>'; };
-    var h = q(P, P, inner / 2, inner / 2, cssVar('--left')) + q(P + inner / 2, P, inner / 2, inner / 2, cssVar('--right')) +
-            q(P, P + inner / 2, inner / 2, inner / 2, cssVar('--left')) + q(P + inner / 2, P + inner / 2, inner / 2, inner / 2, cssVar('--right'));
-    h += '<rect x="' + P + '" y="' + P + '" width="' + inner + '" height="' + inner + '" fill="none" stroke="currentColor" stroke-opacity=".35"/>';
-    for (var g = 1; g < 10; g++) {
-      var t = P + inner * g / 10, op = g === 5 ? '.6' : '.12';
-      h += '<line x1="' + t + '" y1="' + P + '" x2="' + t + '" y2="' + (P + inner) + '" stroke="currentColor" stroke-opacity="' + op + '"/>';
-      h += '<line x1="' + P + '" y1="' + t + '" x2="' + (P + inner) + '" y2="' + t + '" stroke="currentColor" stroke-opacity="' + op + '"/>';
-    }
-    var f = 'font-size="12" fill="currentColor" fill-opacity=".7" text-anchor="middle"';
-    h += '<text x="' + (W / 2) + '" y="' + (P - 12) + '" ' + f + '>Authoritarian</text>';
-    h += '<text x="' + (W / 2) + '" y="' + (W - P + 20) + '" ' + f + '>Libertarian</text>';
-    h += '<text x="' + (P - 14) + '" y="' + (W / 2) + '" ' + f + ' transform="rotate(-90 ' + (P - 14) + ' ' + (W / 2) + ')">Left</text>';
-    h += '<text x="' + (W - P + 16) + '" y="' + (W / 2) + '" ' + f + ' transform="rotate(90 ' + (W - P + 16) + ' ' + (W / 2) + ')">Right</text>';
-    if (econ !== null && auth !== null) {
-      var cx = P + (econ + 100) / 200 * inner, cy = P + (100 - auth) / 200 * inner;
-      h += '<circle cx="' + cx + '" cy="' + cy + '" r="9" fill="' + cssVar('--accent') + '" stroke="white" stroke-width="3"/>';
-    }
-    svg.innerHTML = h;
+    C.drawCompass($('rcompass'), [{ econ: econ, auth: auth, label: 'You', color: cssVar('--accent') }]);
   }
 
   $('rcopy').addEventListener('click', function () {

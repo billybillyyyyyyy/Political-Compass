@@ -55,10 +55,18 @@ score = sum(direction x answer x weight) / sum(2 x weight) x 100
 
 Results show the classic compass (Economic x Authority), all four axes as bars with plain-English bands, the three closest recognisable positions with distances, and a share link that encodes the answers in the URL.
 
+## Public figures and AI estimates
+
+`figures.js` holds 63 editorial placements of well-known people (US presidents and politicians, world leaders, a few thinkers) on the same four axes, each with a one-line reason. Portraits are fetched at view time from the Wikipedia REST API; nothing is hosted here. The results page lets you search and plot up to six of them next to you, and the Public figures page shows the whole set.
+
+"Ask AI" estimates anyone not in the list. It calls the Anthropic Messages API directly from the browser with the visitor's own API key, sends the axis definitions plus ten built-in placements as calibration anchors, and asks for structured JSON (positions, confidence, two-sentence reason). AI estimates are labelled everywhere and are never merged into the built-in list. The key is only stored if the visitor ticks "remember on this device".
+
 ## Files
 
 - `questions.js` question bank, axis definitions, test lengths
 - `scoring.js` scoring, bands, quadrant, closest positions, share-link encoding
+- `figures.js` public figures dataset
+- `compare.js` compare view, portraits, gallery page, AI estimate call
 - `app.js` UI
 - `index.html`, `style.css`
 - `test/` node tests that enforce bank balance and scoring behaviour

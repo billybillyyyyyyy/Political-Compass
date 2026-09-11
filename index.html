@@ -13,6 +13,7 @@
   <header class="top">
     <a class="brand" href="#" data-nav="home">Plain Compass</a>
     <nav>
+      <a href="#figures" data-nav="figures">Public figures</a>
       <a href="#method" data-nav="method">Why this test is different</a>
       <a href="#" data-nav="home">Take the test</a>
     </nav>
@@ -31,6 +32,7 @@
     <ul>
       <li>Your position on the classic compass (Economic and Authority), plus two axes the classic compass mashes together: Cultural (progressive vs traditional) and World (global vs national).</li>
       <li>A plain-English reading of each axis and the three recognisable political positions closest to your answers, with the distance shown so you can see how close the match really is.</li>
+      <li>Your dot next to world leaders and politicians, with portraits. Search for anyone from Reagan to Thatcher to Milei, or ask AI to estimate someone who is not in the list.</li>
       <li>A link you can share or save. Nothing is stored anywhere; the link contains your answers.</li>
     </ul>
   </section>
@@ -73,6 +75,10 @@
     <p class="muted small">Rough placements of well-known positions, not measurements. Distance is on a 0 to 400 scale across all four axes; under 60 is a close match, over 120 means none of these really fits you.</p>
     <div class="labels" id="rlabels"></div>
 
+    <h2>Compare with public figures</h2>
+    <p class="muted small">Editorial placements of well-known people based on their public record, plotted next to you. Rough by nature. Anyone not in the list can be estimated by AI, and those are labelled as such.</p>
+    <div id="rcompare"></div>
+
     <h2>Share or save</h2>
     <div class="share">
       <input id="rlink" readonly>
@@ -85,6 +91,9 @@
     </div>
     <div id="rreviewbox" class="hidden"></div>
   </section>
+
+  <!-- ============ FIGURES ============ -->
+  <section id="view-figures" class="hidden"></section>
 
   <!-- ============ METHOD ============ -->
   <section id="view-method" class="hidden">
@@ -120,6 +129,10 @@
     <p>over the statements you answered on that axis. Weight is 1, or 1.5 if you flagged the statement as important. The result runs from -100 to +100. Skipped statements are left out of both the top and the bottom of the fraction. An axis with fewer than three answered statements is reported as not measured.</p>
     <p>Because every axis has an equal number of statements keyed each way, someone who agrees with everything scores 0 on every axis instead of drifting. The results page also shows your average raw answer; if it is far from zero, you were agreeing or disagreeing with most statements regardless of direction, and you should treat the result with some care.</p>
 
+    <h2>Where the public figures come from</h2>
+    <p>The built-in list is editorial: each person was placed on the four axes by reading their record (votes, policies enacted, party platform, consistent public statements) and using the same scale as the test. Nobody on the list took the test. Treat the placements as landmarks, not measurements, and argue with them.</p>
+    <p>The "Ask AI" option sends the name to Claude with the axis definitions and ten of the built-in placements as calibration anchors, and asks for integer positions plus a two-sentence justification and a confidence level. The request goes straight from your browser to Anthropic using your own API key. The key is never sent anywhere else and is stored only if you tick "remember on this device". AI estimates are labelled everywhere they appear and are never mixed into the built-in list.</p>
+
     <h2>What this test does not do</h2>
     <ul>
       <li>It does not tell you where you sit relative to the average voter in your country. Zero is "balanced answers", not "moderate". Calibrating against real populations needs survey data that no free online test has.</li>
@@ -138,6 +151,8 @@
 </main>
 <script src="questions.js"></script>
 <script src="scoring.js"></script>
+<script src="figures.js"></script>
+<script src="compare.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
