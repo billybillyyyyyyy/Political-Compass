@@ -128,10 +128,6 @@ footer { margin-top: 48px; color: var(--muted); font-size: .85rem; text-align: c
 .cmp-table td { font-size: .88rem; }
 .cmp-table tr.why td { border-bottom: 2px solid var(--line); padding-top: 0; }
 .who { display: flex; align-items: center; gap: 10px; min-width: 160px; }
-.ai-box { margin-top: 16px; border: 1px dashed var(--line); border-radius: 12px; padding: 10px 14px; }
-.ai-box summary { cursor: pointer; font-weight: 600; }
-.ai-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
-.ai-form input[type=text], .ai-form input[type=password] { flex: 1 1 220px; font: inherit; padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); min-width: 0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 16px; }
 .fig { display: flex; gap: 12px; align-items: flex-start; text-align: left; font: inherit; padding: 12px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
 .fig:hover { border-color: var(--accent); }
@@ -139,3 +135,11 @@ footer { margin-top: 48px; color: var(--muted); font-size: .85rem; text-align: c
 .fig .avatar { font-size: 1.1rem; background: var(--line); color: var(--ink); }
 .tag { display: inline-block; font-size: .72rem; padding: 1px 7px; border-radius: 999px; background: var(--line); margin: 3px 3px 0 0; }
 .gallery-top { align-items: center; }
+
+.tip { position: absolute; z-index: 50; pointer-events: none; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; box-shadow: var(--shadow); max-width: 260px; font-size: .9rem; display: none; }
+.zoomctl { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.zoomctl .btn { padding: 4px 10px; font-size: .95rem; line-height: 1.2; }
+.compass.big { max-width: 520px; }
+.gallery-top { margin-top: 12px; }
+.compass .dot { cursor: pointer; }
+.chip.sel { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }

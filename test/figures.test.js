@@ -3,7 +3,9 @@ const assert = require('node:assert/strict');
 const { FIGURES } = require('../figures.js');
 
 test('figures have unique ids and names, four in-range positions, a reason and a wiki title', () => {
-  assert.ok(FIGURES.length >= 50);
+  assert.ok(FIGURES.length >= 90);
+  const cats = new Set(FIGURES.map(f => f.cat));
+  assert.deepEqual([...cats].sort(), ['Commentators', 'Thinkers', 'US politics', 'World leaders']);
   const ids = new Set(), names = new Set();
   for (const f of FIGURES) {
     assert.ok(!ids.has(f.id), f.id); ids.add(f.id);

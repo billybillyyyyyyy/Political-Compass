@@ -14,10 +14,11 @@
  * wiki: English Wikipedia page title, used only to fetch a portrait thumbnail.
  */
 (function (root) {
-  var F = [];
-  function add(id, name, role, pos, why, wiki) { F.push({ id: id, name: name, role: role, pos: pos, why: why, wiki: wiki }); }
+  var F = [], cat = '';
+  function add(id, name, role, pos, why, wiki) { F.push({ id: id, name: name, role: role, pos: pos, why: why, wiki: wiki, cat: cat }); }
 
   /* ---- United States ---- */
+  cat = 'US politics';
   add('reagan',    'Ronald Reagan',            'US President 1981–89',            [70, 25, 55, 45],  'Tax cuts and deregulation, Cold War hawk, war on drugs, socially conservative coalition.', 'Ronald_Reagan');
   add('trump',     'Donald Trump',             'US President 2017–21, 2025–',      [35, 55, 50, 85],  'Tariffs and immigration restriction, strongman style, mixed on economics, nation first.', 'Donald_Trump');
   add('biden',     'Joe Biden',                'US President 2021–25',            [-30, 10, -35, -35], 'Union-friendly Democrat, expanded welfare, pro-alliance, socially liberal from an older generation.', 'Joe_Biden');
@@ -44,12 +45,14 @@
   add('mtg',       'Marjorie Taylor Greene',   'US Representative, Georgia',      [30, 55, 75, 90], 'Populist right: America First, culturally traditional, hostile to foreign aid and alliances.', 'Marjorie_Taylor_Greene');
   add('ronpaul',   'Ron Paul',                 'US Representative, Texas 1976–2013', [85, -80, 35, 55], 'Libertarian: end the Fed, non-interventionist, opposed the Patriot Act and drug war, socially conservative personally.', 'Ron_Paul');
   add('gjohnson',  'Gary Johnson',             'Libertarian presidential nominee 2012, 2016', [80, -75, -20, -30], 'Cut spending, legalise cannabis, open trade, non-interventionist, socially liberal.', 'Gary_Johnson');
+  cat = 'Thinkers';
   add('friedman',  'Milton Friedman',          'Economist',                       [95, -60, 10, -60], 'Free markets above all, opposed the draft and the drug war, pro-free trade.', 'Milton_Friedman');
   add('chomsky',   'Noam Chomsky',             'Linguist and activist',           [-85, -80, -60, -70], 'Anarcho-syndicalist, anti-imperialist, critic of state and corporate power alike.', 'Noam_Chomsky');
   add('aynrand',   'Ayn Rand',                 'Novelist and philosopher',        [100, -70, -20, -20], 'Laissez-faire capitalism, radical individualism, atheist, opposed altruism as a duty.', 'Ayn_Rand');
   add('mlk',       'Martin Luther King Jr.',   'Civil rights leader',             [-60, -40, 0, -50], 'Democratic socialist in economics, nonviolent resistance to unjust law, Christian minister.', 'Martin_Luther_King_Jr.');
 
   /* ---- United Kingdom ---- */
+  cat = 'World leaders';
   add('thatcher',  'Margaret Thatcher',        'UK Prime Minister 1979–90',       [80, 40, 50, 40], 'Privatisation, broke the unions, law and order, Euroskeptic, Atlanticist.', 'Margaret_Thatcher');
   add('churchill', 'Winston Churchill',        'UK Prime Minister 1940–45, 1951–55', [35, 40, 55, 30], 'Imperialist Tory who backed early welfare reforms; wartime state power; European unity from outside.', 'Winston_Churchill');
   add('blair',     'Tony Blair',               'UK Prime Minister 1997–2007',     [10, 30, -35, -60], 'Third Way: markets plus public spending, Iraq war, ID cards and anti-terror laws, pro-EU.', 'Tony_Blair');
@@ -89,7 +92,40 @@
   add('netanyahu', 'Benjamin Netanyahu',       'Israeli Prime Minister',          [50, 55, 45, 60], 'Free-market reformer, security hawk, nationalist coalition.', 'Benjamin_Netanyahu');
   add('ardern',    'Jacinda Ardern',           'NZ Prime Minister 2017–23',       [-40, 15, -60, -50], 'Social democrat, gun ban after Christchurch, strict Covid lockdowns.', 'Jacinda_Ardern');
 
+  /* ---- Commentators and media ---- */
+  cat = 'Commentators';
+  add('kirk',      'Charlie Kirk',             'Turning Point USA founder (1993–2025)', [75, 40, 80, 70], 'Free-market conservative activist, Christian in public life, pro-Trump, immigration restrictionist.', 'Charlie_Kirk');
+  add('piker',     'Hasan Piker',              'Streamer and commentator',        [-85, -45, -70, -65], 'Socialist: abolish billionaires, anti-police, anti-imperialist, pro-Palestinian.', 'Hasan_Piker');
+  add('fuentes',   'Nick Fuentes',             'Streamer, America First',         [-10, 80, 95, 95], 'White nationalist and Catholic integralist; immigration moratorium, economically populist, anti-interventionist.', 'Nick_Fuentes');
+  add('withers',   'Dean Withers',             'Streamer and debater',            [-55, -35, -75, -45], 'Progressive Gen Z debater: pro-choice, LGBT rights, gun control, Medicare for All.', 'Dean_Withers');
+  add('shapiro',   'Ben Shapiro',              'Daily Wire co-founder',           [80, 30, 75, 30], 'Free-market conservative, Orthodox Jewish social conservative, foreign-policy hawk, pro-Israel.', 'Ben_Shapiro');
+  add('knowles',   'Michael Knowles',          'Daily Wire host',                 [60, 55, 95, 55], 'Catholic traditionalist who wants the state to enforce moral norms; integralist-leaning.', 'Michael_Knowles_(political_commentator)');
+  add('walsh',     'Matt Walsh',               'Daily Wire host',                 [55, 55, 95, 60], 'Social conservative focused on gender and family; comfortable using law to enforce it.', 'Matt_Walsh_(political_commentator)');
+  add('dimartino', 'Daniel Di Martino',        'Economist, Manhattan Institute',  [85, 5, 45, -30], 'Venezuelan-born anti-socialist, free markets, supports high-skilled and legal immigration.', 'Daniel_Di_Martino');
+  add('carlson',   'Tucker Carlson',           'Broadcaster',                     [10, 40, 70, 90], 'Populist nationalist: anti-immigration, anti-interventionist, skeptical of free markets and big business.', 'Tucker_Carlson');
+  add('owens',     'Candace Owens',            'Commentator',                     [50, 50, 85, 75], 'Social conservative, anti-feminist, anti-interventionist, deeply skeptical of institutions.', 'Candace_Owens');
+  add('mkelly',    'Megyn Kelly',              'Broadcaster',                     [55, 35, 55, 45], 'Conservative-leaning independent, tough on crime and gender activism, hawkish on security.', 'Megyn_Kelly');
+  add('rogan',     'Joe Rogan',                'Podcaster',                       [40, -55, 10, 30], 'Libertarian-leaning: legalise drugs, pro-gun, distrusts institutions, drifted right since 2020.', 'Joe_Rogan');
+  add('peterson',  'Jordan Peterson',          'Psychologist and author',         [65, 10, 70, 20], 'Free markets, opposed compelled speech laws, traditional roles and hierarchy, order over chaos.', 'Jordan_Peterson');
+  add('destiny',   'Destiny (Steven Bonnell)', 'Streamer and debater',            [10, 20, -60, -60], 'Liberal institutionalist: pro-market social democrat, socially liberal, defends alliances and trade.', 'Destiny_(streamer)');
+  add('vaush',     'Vaush',                    'Streamer',                        [-85, -55, -80, -70], 'Libertarian socialist, anti-police, strongly progressive on culture.', 'Vaush');
+  add('bannon',    'Steve Bannon',             'Strategist and broadcaster',      [-20, 60, 70, 95], 'Economic nationalism, anti-elite, anti-China, tariffs, deportations.', 'Steve_Bannon');
+  add('musk',      'Elon Musk',                'Businessman',                     [70, 30, 20, 40], 'Anti-regulation, cut government, anti-“woke”, pro-Trump, but pro-skilled-immigration.', 'Elon_Musk');
+  add('ramaswamy', 'Vivek Ramaswamy',          'Businessman and politician',      [80, 25, 55, 55], 'Free market, America First, anti-DEI, shut down federal agencies.', 'Vivek_Ramaswamy');
+  add('hannity',   'Sean Hannity',             'Broadcaster',                     [70, 50, 70, 60], 'Partisan conservative: law and order, hawkish, low taxes.', 'Sean_Hannity');
+  add('maddow',    'Rachel Maddow',            'Broadcaster',                     [-40, 5, -60, -50], 'Progressive liberal, institutionalist, pro-alliance.', 'Rachel_Maddow');
+  add('stewart',   'Jon Stewart',              'Comedian and host',               [-45, -30, -50, -30], 'Liberal populist, anti-war, critical of both parties and of corporate money.', 'Jon_Stewart');
+  add('greenwald', 'Glenn Greenwald',          'Journalist',                      [-40, -85, -30, -40], 'Civil libertarian: anti-surveillance, anti-war, free speech absolutist, culturally heterodox.', 'Glenn_Greenwald');
+  add('maher',     'Bill Maher',               'Comedian and host',               [15, -30, 0, -10], 'Libertarian-ish liberal: atheist, anti-“woke”, pro-Israel, legalise drugs.', 'Bill_Maher');
+  add('yang',      'Andrew Yang',              'Entrepreneur and politician',     [-20, -20, -40, -30], 'Universal basic income, technocratic, moderate on culture, founded the Forward Party.', 'Andrew_Yang');
+  add('uygur',     'Cenk Uygur',               'The Young Turks founder',         [-60, -20, -55, -30], 'Progressive populist: Medicare for All, get money out of politics.', 'Cenk_Uygur');
+  add('mamdani',   'Zohran Mamdani',           'Mayor of New York City',          [-80, -35, -70, -55], 'Democratic socialist: rent freeze, city-owned grocery stores, free buses, pro-Palestinian.', 'Zohran_Mamdani');
+  add('buchanan',  'Pat Buchanan',             'Commentator, presidential candidate', [-5, 45, 85, 90], 'Paleoconservative: protectionism, immigration restriction, traditionalism, non-interventionism.', 'Pat_Buchanan');
+  add('goldwater', 'Barry Goldwater',          'US Senator, Arizona; 1964 nominee', [85, -40, 30, 40], 'Libertarian conservative; later defended gay rights and attacked the religious right.', 'Barry_Goldwater');
+  add('nader',     'Ralph Nader',              'Consumer advocate, Green candidate', [-65, -30, -40, 20], 'Consumer protection, anti-corporate, anti-war, skeptical of free trade deals.', 'Ralph_Nader');
+
   /* ---- Thinkers ---- */
+  cat = 'Thinkers';
   add('marx',      'Karl Marx',                'Philosopher and economist',       [-100, 30, -40, -70], 'Abolish private capital; workers’ state as a transition; workers of the world unite.', 'Karl_Marx');
 
   var api = { FIGURES: F };

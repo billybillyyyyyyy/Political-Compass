@@ -176,14 +176,9 @@
     if (v.some(function (x) { return x === null; })) return null;
     return { pos: v, link: location.hash.indexOf('#r?') === 0 ? location.hash : null };
   }
-  /* Keep built-in selections in step with the URL without dropping AI estimates held in memory. */
   function syncSelection(csv) {
     var want = (csv || '').split(',').filter(Boolean).join(',');
-    if (want !== C.selectedIds().join(',')) {
-      var ai = C.state.selected.filter(function (f) { return f.ai; });
-      C.setFromIds(want);
-      ai.forEach(function (f) { if (C.state.selected.length < 6) C.state.selected.push(f); });
-    }
+    if (want !== C.selectedIds().join(',')) C.setFromIds(want);
   }
   function writeSelectionToHash() {
     var h = location.hash.replace(/([?&])c=[^&]*/, '$1').replace(/[?&]$/, '');
@@ -206,7 +201,7 @@
     } catch (e) {}
     C.renderGallery($('view-figures'), u, function () {
       writeSelectionToHash();
-      if (u) { var ids = C.selectedIds(); u.link = last.replace(/([?&])c=[^&]*/, '$1').replace(/[?&]$/, '') + (ids.length ? '&c=' + ids.join(',') : ''); var a = document.querySelector('#view-figures a.btn.primary'); if (a) a.href = u.link; }
+      if (u) { var ids = C.selectedIds(); u.link = last.replace(/([?&])c=[^&]*/, '$1').replace(/[?&]$/, '') + (ids.length ? '&c=' + ids.join(',') : ''); var a = $('galcmp'); if (a) a.href = u.link; }
     });
   }
 
