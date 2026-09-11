@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plain Compass: a political compass test that measures what you actually think</title>
+<meta name="description" content="A political compass test built to fix the problems with the popular ones: plain-English statements, balanced questions, a real neutral option, skip, and three lengths to choose from.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%232f5bea%27/%3E%3Cpath d=%27M16 4v24M4 16h24%27 stroke=%27white%27 stroke-width=%273%27/%3E%3Ccircle cx=%2721%27 cy=%2711%27 r=%274%27 fill=%27white%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header class="top">
+    <a class="brand" href="#" data-nav="home">Plain Compass</a>
+    <nav>
+      <a href="#method" data-nav="method">Why this test is different</a>
+      <a href="#" data-nav="home">Take the test</a>
+    </nav>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <section id="view-home">
+    <h1>A political compass test that measures what you actually think.</h1>
+    <p class="muted">Most compass tests ask vague, loaded statements, count your answers with hidden weights, and drop nearly everyone in the same corner. This one asks plain questions about real trade-offs, keys them so that agreeing with everything cancels out, lets you skip what you don't know, and shows exactly how it scores you.</p>
+
+    <h2>Choose a length</h2>
+    <div class="lengths" id="lengths"></div>
+    <p class="hint">You can answer with a keyboard: <b>1</b> to <b>5</b> for strongly disagree to strongly agree, <b>S</b> to skip, <b>M</b> to mark a statement as important, <b>Backspace</b> to go back.</p>
+
+    <h2>What you get</h2>
+    <ul>
+      <li>Your position on the classic compass (Economic and Authority), plus two axes the classic compass mashes together: Cultural (progressive vs traditional) and World (global vs national).</li>
+      <li>A plain-English reading of each axis and the three recognisable political positions closest to your answers, with the distance shown so you can see how close the match really is.</li>
+      <li>A link you can share or save. Nothing is stored anywhere; the link contains your answers.</li>
+    </ul>
+  </section>
+
+  <!-- ============ TEST ============ -->
+  <section id="view-test" class="hidden">
+    <div class="qmeta"><span id="qcount"></span><span id="qaxis"></span></div>
+    <div class="progress"><div id="qprog"></div></div>
+    <div class="card">
+      <div class="qtext" id="qtext"></div>
+      <div class="scale" id="scale">
+        <button data-v="-2">Strongly disagree<span class="k">1</span></button>
+        <button data-v="-1">Disagree<span class="k">2</span></button>
+        <button data-v="0">Neutral<span class="k">3</span></button>
+        <button data-v="1">Agree<span class="k">4</span></button>
+        <button data-v="2">Strongly agree<span class="k">5</span></button>
+      </div>
+      <div class="qfoot">
+        <label><input type="checkbox" id="qimp"> This one matters a lot to me</label>
+        <div class="btns">
+          <button class="btn" id="qback">Back</button>
+          <button class="btn" id="qskip">Skip / don't know</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Neutral means you genuinely sit in the middle and counts toward the centre. Skip means you don't know or the statement doesn't apply; it is left out of the score entirely.</p>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="view-results" class="hidden">
+    <p class="muted small" id="rlen"></p>
+    <p class="headline" id="rquad"></p>
+    <div id="rnotice"></div>
+    <div class="compass-wrap">
+      <svg class="compass" id="rcompass" viewBox="0 0 320 320" role="img" aria-label="Compass plot"></svg>
+      <div class="axes" id="raxes"></div>
+    </div>
+
+    <h2>Closest recognisable positions</h2>
+    <p class="muted small">Rough placements of well-known positions, not measurements. Distance is on a 0 to 400 scale across all four axes; under 60 is a close match, over 120 means none of these really fits you.</p>
+    <div class="labels" id="rlabels"></div>
+
+    <h2>Share or save</h2>
+    <div class="share">
+      <input id="rlink" readonly>
+      <button class="btn" id="rcopy">Copy link</button>
+    </div>
+    <div class="share">
+      <button class="btn primary" id="rretake">Retake</button>
+      <button class="btn" id="rlonger">Take a longer version</button>
+      <button class="btn link" id="rreview">Review my answers</button>
+    </div>
+    <div id="rreviewbox" class="hidden"></div>
+  </section>
+
+  <!-- ============ METHOD ============ -->
+  <section id="view-method" class="hidden">
+    <h1>Why this test is different</h1>
+    <p class="muted">This was built after reading what people say is wrong with the popular tests: politicalcompass.org, 8values and its many clones (SapplyValues, 9Axes, PolitiScales), and the Pew typology quiz. The complaints repeat. Here is each one and what this test does about it.</p>
+
+    <h2>The problems with existing tests</h2>
+    <table>
+      <tr><th>Complaint</th><th>Where it shows up</th><th>What this test does</th></tr>
+      <tr><td>Statements are vague and written to provoke a reaction, so your answer depends on how you read them, not what you believe.</td><td>politicalcompass.org ("Military action that defies international law is sometimes justified"); 8values ("Excessive government intervention is a threat")</td><td>Every statement is about a concrete choice with a real trade-off, in plain English, one idea per line.</td></tr>
+      <tr><td>Loaded wording. One side's view is written to sound greedy or extreme, the other side's to sound fair.</td><td>politicalcompass.org; 8values</td><td>Each side of each axis gets statements written the way someone who holds that view would say it.</td></tr>
+      <tr><td>Unbalanced keying. If more statements are worded one way, people who tend to agree drift in that direction no matter what they think.</td><td>politicalcompass.org (about 36 right-coded vs 20 left-coded items in one analysis)</td><td>Exactly half the statements on every axis, in every test length, push one way when you agree and half push the other. Yes-saying cancels out, and the results page tells you if you did it.</td></tr>
+      <tr><td>No neutral option, so you have to pick a side on things you are genuinely torn about.</td><td>politicalcompass.org (4-point scale)</td><td>5-point scale with a real neutral.</td></tr>
+      <tr><td>No way to skip, so guessing on things you know nothing about counts the same as a firm view.</td><td>Nearly all of them</td><td>Skip leaves the statement out of the score entirely. If you skip too many on an axis, that axis is marked as not measured.</td></tr>
+      <tr><td>Consensus statements that almost nobody disagrees with, which add noise and push everyone the same way.</td><td>8values ("International trade is beneficial", "Quality education is a right")</td><td>Statements were chosen to split people. No motherhood-and-apple-pie items.</td></tr>
+      <tr><td>Statements scored on the wrong axis, or on several axes at once with made-up weights.</td><td>8values (one statement counts on all four axes at once)</td><td>Each statement counts on exactly one axis with the same weight as every other statement. The scoring code is public and short.</td></tr>
+      <tr><td>Hidden formula and a starting offset that drops almost everyone in the libertarian-left corner.</td><td>politicalcompass.org</td><td>No offsets. Zero on an axis means your answers balanced out. The formula is on this page.</td></tr>
+      <tr><td>"Social" axis mixes two different things: how much power the state should have, and whether society should be traditional or progressive. A religious libertarian and a secular authoritarian both get mangled.</td><td>politicalcompass.org</td><td>Separate Authority and Cultural axes. The classic two-axis compass is still shown, using the Authority axis.</td></tr>
+      <tr><td>The tradition axis is really just "religion vs science".</td><td>8values</td><td>The Cultural axis covers family, gender, sexuality, religion in public life, monuments, respect for elders and social change, not only religion.</td></tr>
+      <tr><td>Forced binary choices where neither option is what you think.</td><td>Pew typology</td><td>Agree/disagree with strength, plus neutral and skip.</td></tr>
+      <tr><td>All statements count the same, even ones you don't care about.</td><td>All of them</td><td>Optional "matters a lot to me" flag gives a statement 1.5x weight. Off by default.</td></tr>
+      <tr><td>One fixed length. Too long for casual use, or too short to mean anything.</td><td>All of them</td><td>Quick (24), Standard (48) and Full (80). The shorter tests use the statements that best distinguish people; the longer ones add precision.</td></tr>
+      <tr><td>Too US-specific, or references to debates from twenty years ago.</td><td>politicalcompass.org; Pew</td><td>No named countries, parties or politicians. Statements are about things most countries argue over today.</td></tr>
+      <tr><td>Results assign you an ideology name as if it were a fact.</td><td>8values family</td><td>The three closest positions are shown with distances, and described as rough placements.</td></tr>
+    </table>
+
+    <h2>The four axes</h2>
+    <div id="maxes"></div>
+
+    <h2>How it scores you</h2>
+    <p>Each answer is a number: strongly disagree = -2, disagree = -1, neutral = 0, agree = +1, strongly agree = +2. Each statement has a direction (+1 or -1) saying which pole agreeing pushes toward. For each axis:</p>
+    <pre class="card small">score = sum(direction x answer x weight) / sum(2 x weight) x 100</pre>
+    <p>over the statements you answered on that axis. Weight is 1, or 1.5 if you flagged the statement as important. The result runs from -100 to +100. Skipped statements are left out of both the top and the bottom of the fraction. An axis with fewer than three answered statements is reported as not measured.</p>
+    <p>Because every axis has an equal number of statements keyed each way, someone who agrees with everything scores 0 on every axis instead of drifting. The results page also shows your average raw answer; if it is far from zero, you were agreeing or disagreeing with most statements regardless of direction, and you should treat the result with some care.</p>
+
+    <h2>What this test does not do</h2>
+    <ul>
+      <li>It does not tell you where you sit relative to the average voter in your country. Zero is "balanced answers", not "moderate". Calibrating against real populations needs survey data that no free online test has.</li>
+      <li>It does not measure everything. Foreign policy hawkishness, environmentalism and attitudes to technology are folded into the four axes or left out on purpose. Four axes is already at the limit of what most people can read at a glance; more axes look precise but mostly add noise.</li>
+      <li>It has not been validated on a large sample. The design follows what survey researchers recommend (balanced keying, item-specific wording, neutral and skip options, no valence items), but reliability figures would need real data. The full version will be the most stable if you retake it.</li>
+    </ul>
+
+    <h2>Every statement in the bank</h2>
+    <p class="muted small">Listed by axis. "Agree pushes" shows which way each statement is keyed. Tier 1 is in the quick test, tiers 1 and 2 in standard, all three in full.</p>
+    <div id="mbank"></div>
+
+    <p style="margin-top:24px"><a href="#" data-nav="home">Take the test</a></p>
+  </section>
+
+  <footer>Plain Compass. Open source, no tracking, nothing stored. Your result link contains your answers and nothing else.</footer>
+</main>
+<script src="questions.js"></script>
+<script src="scoring.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

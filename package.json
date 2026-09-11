@@ -1,0 +1,11 @@
+{
+  "name": "plain-compass",
+  "version": "1.0.0",
+  "description": "A political compass test built to fix the problems with the popular ones.",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "python3 -m http.server 8080"
+  },
+  "license": "MIT"
+}
