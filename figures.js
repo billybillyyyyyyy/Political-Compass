@@ -119,7 +119,7 @@
   add('maher',     'Bill Maher',               'Comedian and host',               [15, -30, 0, -10], 'Libertarian-ish liberal: atheist, anti-“woke”, pro-Israel, legalise drugs.', 'Bill_Maher');
   add('yang',      'Andrew Yang',              'Entrepreneur and politician',     [-20, -20, -40, -30], 'Universal basic income, technocratic, moderate on culture, founded the Forward Party.', 'Andrew_Yang');
   add('uygur',     'Cenk Uygur',               'The Young Turks founder',         [-60, -20, -55, -30], 'Progressive populist: Medicare for All, get money out of politics.', 'Cenk_Uygur');
-  add('mamdani',   'Zohran Mamdani',           'Mayor of New York City',          [-80, -35, -70, -55], 'Democratic socialist: rent freeze, city-owned grocery stores, free buses, pro-Palestinian.', 'Zohran_Mamdani');
+  add('mamdani',   'Zohran Mamdani',           'Mayor of New York City',          [-90, -35, -70, -55], 'DSA socialist who said in 2021 “the end goal is seizing the means of production”; rent freeze, city-owned groceries, free buses; civil libertarian on policing.', 'Zohran_Mamdani');
   add('buchanan',  'Pat Buchanan',             'Commentator, presidential candidate', [-5, 45, 85, 90], 'Paleoconservative: protectionism, immigration restriction, traditionalism, non-interventionism.', 'Pat_Buchanan');
   add('goldwater', 'Barry Goldwater',          'US Senator, Arizona; 1964 nominee', [85, -40, 30, 40], 'Libertarian conservative; later defended gay rights and attacked the religious right.', 'Barry_Goldwater');
   add('nader',     'Ralph Nader',              'Consumer advocate, Green candidate', [-65, -30, -40, 20], 'Consumer protection, anti-corporate, anti-war, skeptical of free trade deals.', 'Ralph_Nader');
