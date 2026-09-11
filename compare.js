@@ -82,6 +82,8 @@
     var left = x + 14, top = y + 14;
     if (left + w > window.innerWidth - 8) left = x - w - 14;
     if (top + h > window.innerHeight - 8) top = y - h - 14;
+    left = Math.max(8, Math.min(left, window.innerWidth - w - 8));
+    top = Math.max(8, top);
     tip.style.left = (left + window.scrollX) + 'px'; tip.style.top = (top + window.scrollY) + 'px';
   }
   function hideTip() { if (tip) tip.style.display = 'none'; }
