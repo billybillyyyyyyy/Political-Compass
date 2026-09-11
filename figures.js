@@ -29,8 +29,8 @@
   add('lbj',       'Lyndon B. Johnson',        'US President 1963–69',            [-55, 30, -10, -10], 'Great Society and civil rights at home, escalation in Vietnam abroad.', 'Lyndon_B._Johnson');
   add('jfk',       'John F. Kennedy',          'US President 1961–63',            [-20, 20, 15, -20], 'Tax cuts and spending, Cold War liberal, cautious on civil rights until 1963.', 'John_F._Kennedy');
   add('fdr',       'Franklin D. Roosevelt',    'US President 1933–45',            [-65, 35, 10, -30], 'New Deal and a much bigger federal state; wartime internment; led the move to internationalism.', 'Franklin_D._Roosevelt');
-  add('sanders',   'Bernie Sanders',           'US Senator, Vermont',             [-75, -15, -55, -20], 'Democratic socialist: Medicare for All, pro-union, skeptical of free trade deals.', 'Bernie_Sanders');
-  add('aoc',       'Alexandria Ocasio-Cortez', 'US Representative, New York',     [-75, -30, -75, -50], 'Green New Deal, democratic socialist, strongly progressive on culture, wants ICE abolished.', 'Alexandria_Ocasio-Cortez');
+  add('sanders',   'Bernie Sanders',           'US Senator, Vermont',             [-90, -15, -55, -20], 'Self-described democratic socialist: Medicare for All, pro-union, skeptical of free trade deals. Not a DSA member; his platform is closer to the Nordic model than to public ownership.', 'Bernie_Sanders');
+  add('aoc',       'Alexandria Ocasio-Cortez', 'US Representative, New York',     [-90, -30, -75, -50], 'DSA member: Green New Deal, Medicare for All, strongly progressive on culture, wants ICE abolished.', 'Alexandria_Ocasio-Cortez');
   add('warren',    'Elizabeth Warren',         'US Senator, Massachusetts',       [-60, 0, -55, -20], 'Wealth tax, break up big tech, consumer protection, progressive but a self-described capitalist.', 'Elizabeth_Warren');
   add('harris',    'Kamala Harris',            'US Vice President 2021–25',       [-30, 5, -50, -40], 'Mainstream Democrat, former prosecutor, socially progressive, pro-alliance.', 'Kamala_Harris');
   add('hclinton',  'Hillary Clinton',          'US Secretary of State 2009–13',   [-20, 15, -40, -45], 'Centre-left, hawkish on foreign policy, socially liberal, pro-trade.', 'Hillary_Clinton');
@@ -95,7 +95,7 @@
   /* ---- Commentators and media ---- */
   cat = 'Commentators';
   add('kirk',      'Charlie Kirk',             'Turning Point USA founder (1993–2025)', [75, 40, 80, 70], 'Free-market conservative activist, Christian in public life, pro-Trump, immigration restrictionist.', 'Charlie_Kirk');
-  add('piker',     'Hasan Piker',              'Streamer and commentator',        [-85, -45, -70, -65], 'Socialist: abolish billionaires, anti-police, anti-imperialist, pro-Palestinian.', 'Hasan_Piker');
+  add('piker',     'Hasan Piker',              'Streamer and commentator',        [-90, -45, -70, -65], 'Socialist: abolish billionaires, anti-police, anti-imperialist, pro-Palestinian.', 'Hasan_Piker');
   add('fuentes',   'Nick Fuentes',             'Streamer, America First',         [-10, 80, 95, 95], 'White nationalist and Catholic integralist; immigration moratorium, economically populist, anti-interventionist.', 'Nick_Fuentes');
   add('withers',   'Dean Withers',             'Streamer and debater',            [-55, -35, -75, -45], 'Progressive Gen Z debater: pro-choice, LGBT rights, gun control, Medicare for All.', 'Dean_Withers');
   add('shapiro',   'Ben Shapiro',              'Daily Wire co-founder',           [80, 30, 75, 30], 'Free-market conservative, Orthodox Jewish social conservative, foreign-policy hawk, pro-Israel.', 'Ben_Shapiro');
