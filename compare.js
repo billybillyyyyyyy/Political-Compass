@@ -15,24 +15,47 @@
   var MAX_SEL = 6;
   var state = { selected: [] };
 
-  /* ---------- portraits ---------- */
-  var thumbs = {};
+  /* ---------- portraits ----------
+   * Thumbnail URLs come from the Wikipedia REST API. They are cached on the
+   * device for a week so repeat visits do not refetch, and cards only look
+   * up their portrait once they scroll into view. */
+  var thumbs = {}, CACHE_KEY = 'pc_thumbs_v1', CACHE_TTL = 7 * 24 * 3600 * 1000, saveTimer = null;
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.ts && Date.now() - cached.ts < CACHE_TTL && cached.map) thumbs = cached.map;
+  } catch (e) {}
+  function persistThumbs() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), map: thumbs })); } catch (e) {} }, 500);
+  }
+  var inflight = {};
   function thumb(fig) {
     if (!fig.wiki) return Promise.resolve(null);
     if (thumbs[fig.wiki] !== undefined) return Promise.resolve(thumbs[fig.wiki]);
-    return fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + fig.wiki, { headers: { accept: 'application/json' } })
+    if (inflight[fig.wiki]) return inflight[fig.wiki];
+    inflight[fig.wiki] = fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + fig.wiki, { headers: { accept: 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { var u = j && j.thumbnail && j.thumbnail.source || null; thumbs[fig.wiki] = u; return u; })
-      .catch(function () { thumbs[fig.wiki] = null; return null; });
+      .then(function (j) { var u = j && j.thumbnail && j.thumbnail.source || null; thumbs[fig.wiki] = u; persistThumbs(); return u; })
+      .catch(function () { return null; })   // leave uncached so a flaky network can retry later
+      .then(function (u) { delete inflight[fig.wiki]; return u; });
+    return inflight[fig.wiki];
   }
   function avatarHTML(fig, size, color) {
     var s = size || 40;
     return '<span class="avatar" data-wiki="' + esc(fig.wiki || '') + '" style="width:' + s + 'px;height:' + s + 'px;background:' + (color || 'var(--line)') + '"><span>' + esc(initials(fig.name)) + '</span></span>';
   }
+  function fillAvatar(el) {
+    var wiki = el.getAttribute('data-wiki'); if (!wiki || el.getAttribute('data-done')) return;
+    el.setAttribute('data-done', '1');
+    thumb({ wiki: wiki }).then(function (u) { if (u) el.innerHTML = '<img src="' + esc(u) + '" alt="" loading="lazy" decoding="async">'; });
+  }
+  var io = ('IntersectionObserver' in root) ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { if (en.isIntersecting) { io.unobserve(en.target); fillAvatar(en.target); } });
+  }, { rootMargin: '200px' }) : null;
   function hydrateAvatars(container) {
     Array.prototype.forEach.call(container.querySelectorAll('.avatar[data-wiki]'), function (el) {
-      var wiki = el.getAttribute('data-wiki'); if (!wiki) return;
-      thumb({ wiki: wiki }).then(function (u) { if (u) el.innerHTML = '<img src="' + esc(u) + '" alt="" loading="lazy">'; });
+      if (!el.getAttribute('data-wiki')) return;
+      if (io) io.observe(el); else fillAvatar(el);
     });
   }
 
@@ -81,22 +104,22 @@
     }
     for (var g = 1; g < 10; g++) {
       var t = P + INNER * g / 10, op = g === 5 ? '.6' : '.12', sw = 1 / k;
-      h += '<line x1="' + t + '" y1="' + P + '" x2="' + t + '" y2="' + (P + INNER) + '" stroke="currentColor" stroke-opacity="' + op + '" stroke-width="' + sw + '" pointer-events="none"/>';
-      h += '<line x1="' + P + '" y1="' + t + '" x2="' + (P + INNER) + '" y2="' + t + '" stroke="currentColor" stroke-opacity="' + op + '" stroke-width="' + sw + '" pointer-events="none"/>';
+      h += '<line x1="' + t + '" y1="' + P + '" x2="' + t + '" y2="' + (P + INNER) + '" stroke="currentColor" stroke-opacity="' + op + '" stroke-width="' + sw + '" data-sw="1" pointer-events="none"/>';
+      h += '<line x1="' + P + '" y1="' + t + '" x2="' + (P + INNER) + '" y2="' + t + '" stroke="currentColor" stroke-opacity="' + op + '" stroke-width="' + sw + '" data-sw="1" pointer-events="none"/>';
     }
-    h += '<rect x="' + P + '" y="' + P + '" width="' + INNER + '" height="' + INNER + '" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="' + (1 / k) + '" pointer-events="none"/>';
+    h += '<rect x="' + P + '" y="' + P + '" width="' + INNER + '" height="' + INNER + '" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="' + (1 / k) + '" data-sw="1" pointer-events="none"/>';
     var defs = '';
     (points || []).forEach(function (p, i) {
       if (p.econ === null || p.auth === null) return;
       var xy = toXY(p.econ, p.auth), cx = xy.x, cy = xy.y, rr = (p.r || 9) / k;
-      var attrs = ' class="dot" data-i="' + i + '"';
+      var base = (p.r || 9), attrs = ' class="dot" data-i="' + i + '" data-cx="' + cx + '" data-cy="' + cy + '" data-r="' + base + '"';
       if (p.img) {
-        defs += '<clipPath id="cp' + i + '"><circle cx="' + cx + '" cy="' + cy + '" r="' + rr + '"/></clipPath>';
-        h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (rr + 2 / k) + '" fill="' + p.color + '"' + attrs + '/>';
+        defs += '<clipPath id="cp' + i + '"><circle class="clip" cx="' + cx + '" cy="' + cy + '" r="' + rr + '" data-r="' + base + '"/></clipPath>';
+        h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (rr + 2 / k) + '" fill="' + p.color + '"' + attrs + ' data-ring="1"/>';
         h += '<image href="' + esc(p.img) + '" x="' + (cx - rr) + '" y="' + (cy - rr) + '" width="' + (2 * rr) + '" height="' + (2 * rr) + '" clip-path="url(#cp' + i + ')" preserveAspectRatio="xMidYMid slice"' + attrs + '/>';
       } else {
-        h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + rr + '" fill="' + p.color + '" stroke="white" stroke-width="' + (2 / k) + '"' + attrs + '/>';
-        if (p.text) h += '<text x="' + cx + '" y="' + (cy + 3.5 / k) + '" font-size="' + (9 / k) + '" font-weight="700" fill="white" text-anchor="middle" pointer-events="none">' + esc(p.text) + '</text>';
+        h += '<circle cx="' + cx + '" cy="' + cy + '" r="' + rr + '" fill="' + p.color + '" stroke="white" stroke-width="' + (2 / k) + '" data-sw="2"' + attrs + '/>';
+        if (p.text) h += '<text class="dl" x="' + cx + '" y="' + (cy + 3.5 / k) + '" data-cy="' + cy + '" font-size="' + (9 / k) + '" font-weight="700" fill="white" text-anchor="middle" pointer-events="none">' + esc(p.text) + '</text>';
       }
     });
     var f = 'font-size="12" fill="currentColor" fill-opacity=".7" text-anchor="middle" pointer-events="none"';
@@ -107,9 +130,26 @@
     // zoom about the plot centre: translate so that view (x,y) in plot units is centred
     var tr = 'translate(' + (W / 2 - k * (W / 2 + v.x)) + ' ' + (W / 2 - k * (W / 2 + v.y)) + ') scale(' + k + ')';
     svg.innerHTML = (defs ? '<defs>' + defs + '</defs><clipPath id="plotclip"><rect x="' + P + '" y="' + P + '" width="' + INNER + '" height="' + INNER + '"/></clipPath>' : '<clipPath id="plotclip"><rect x="' + P + '" y="' + P + '" width="' + INNER + '" height="' + INNER + '"/></clipPath>') +
-      '<g clip-path="url(#plotclip)"><g transform="' + tr + '">' + h + '</g></g>' + labels;
+      '<g clip-path="url(#plotclip)"><g class="plot" transform="' + tr + '">' + h + '</g></g>' + labels;
     svg._points = points || [];
     if (!svg._wired) wire(svg);
+  }
+
+  /* Cheap zoom/pan update: move the group and resize dots in place, no rebuild. */
+  function applyView(svg) {
+    var v = svg._view, k = v.k, plot = svg.querySelector('g.plot'); if (!plot) return;
+    plot.setAttribute('transform', 'translate(' + (W / 2 - k * (W / 2 + v.x)) + ' ' + (W / 2 - k * (W / 2 + v.y)) + ') scale(' + k + ')');
+    var i, els = svg.querySelectorAll('[data-sw]');
+    for (i = 0; i < els.length; i++) els[i].setAttribute('stroke-width', (+els[i].getAttribute('data-sw')) / k);
+    els = svg.querySelectorAll('circle.dot, circle.clip');
+    for (i = 0; i < els.length; i++) { var base = +els[i].getAttribute('data-r'); els[i].setAttribute('r', base / k + (els[i].getAttribute('data-ring') ? 2 / k : 0)); }
+    els = svg.querySelectorAll('image.dot');
+    for (i = 0; i < els.length; i++) {
+      var rr = (+els[i].getAttribute('data-r')) / k, cx = +els[i].getAttribute('data-cx'), cy = +els[i].getAttribute('data-cy');
+      els[i].setAttribute('x', cx - rr); els[i].setAttribute('y', cy - rr); els[i].setAttribute('width', 2 * rr); els[i].setAttribute('height', 2 * rr);
+    }
+    els = svg.querySelectorAll('text.dl');
+    for (i = 0; i < els.length; i++) { els[i].setAttribute('font-size', 9 / k); els[i].setAttribute('y', (+els[i].getAttribute('data-cy')) + 3.5 / k); }
   }
 
   /* hover: dots show who, cells show the region label; click on a dot fires svg.onDot(point) */
@@ -144,53 +184,56 @@
     v.x = Math.max(-lim, Math.min(lim, v.x)); v.y = Math.max(-lim, Math.min(lim, v.y));
     return v;
   }
-  function zoomBy(svg, factor, redraw) {
-    var v = svg._view || (svg._view = { x: 0, y: 0, k: 1 });
-    v.k *= factor; clampView(v); redraw();
+  function scheduleView(svg) {
+    if (svg._raf) return;
+    svg._raf = requestAnimationFrame(function () { svg._raf = 0; applyView(svg); });
   }
-  function resetZoom(svg, redraw) { svg._view = { x: 0, y: 0, k: 1 }; redraw(); }
-  function attachZoom(svg, redraw) {
+  function zoomBy(svg, factor) {
+    var v = svg._view || (svg._view = { x: 0, y: 0, k: 1 });
+    v.k *= factor; clampView(v); scheduleView(svg);
+  }
+  function resetZoom(svg) { svg._view = { x: 0, y: 0, k: 1 }; scheduleView(svg); }
+  function attachZoom(svg) {
     if (svg._zoomed) return; svg._zoomed = true;
     var v = svg._view || (svg._view = { x: 0, y: 0, k: 1 });
     function unit() { return svg.getBoundingClientRect().width / W; }  // screen px per plot unit at k=1
     svg.addEventListener('wheel', function (e) {
       e.preventDefault();
       var factor = e.deltaY < 0 ? 1.25 : 0.8;
-      // zoom toward the cursor
       var rect = svg.getBoundingClientRect(), u = unit();
       var px = (e.clientX - rect.left) / u - W / 2, py = (e.clientY - rect.top) / u - W / 2;   // cursor offset from frame centre, plot units
       var k0 = v.k, k1 = Math.max(1, Math.min(8, k0 * factor));
       v.x += px / k0 - px / k1; v.y += py / k0 - py / k1; v.k = k1;
-      clampView(v); redraw();
+      clampView(v); scheduleView(svg);
     }, { passive: false });
     var drag = null, pinch = null;
     svg.addEventListener('pointerdown', function (e) { if (e.isPrimary) drag = { x: e.clientX, y: e.clientY, vx: v.x, vy: v.y, id: e.pointerId }; });
     svg.addEventListener('pointermove', function (e) {
       if (!drag || !e.isPrimary || pinch) return;
-      var u = unit();
-      var dx = (e.clientX - drag.x) / u / v.k, dy = (e.clientY - drag.y) / u / v.k;
       if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 3) return;
       if (!drag.captured) { drag.captured = true; try { svg.setPointerCapture(drag.id); } catch (err) {} }
-      v.x = drag.vx - dx; v.y = drag.vy - dy; clampView(v); redraw();
+      var u = unit();
+      v.x = drag.vx - (e.clientX - drag.x) / u / v.k; v.y = drag.vy - (e.clientY - drag.y) / u / v.k;
+      clampView(v); scheduleView(svg);
     });
     svg.addEventListener('pointerup', function () { drag = null; });
     svg.addEventListener('pointercancel', function () { drag = null; });
-    svg.addEventListener('touchstart', function (e) { if (e.touches.length === 2) { pinch = { d: dist2(e.touches), k: v.k }; } }, { passive: true });
+    svg.addEventListener('touchstart', function (e) { if (e.touches.length === 2) { pinch = { d: dist2(e.touches), k: v.k }; drag = null; } }, { passive: true });
     svg.addEventListener('touchmove', function (e) {
-      if (e.touches.length === 2 && pinch) { e.preventDefault(); v.k = pinch.k * dist2(e.touches) / pinch.d; clampView(v); redraw(); }
+      if (e.touches.length === 2 && pinch) { e.preventDefault(); v.k = pinch.k * dist2(e.touches) / pinch.d; clampView(v); scheduleView(svg); }
     }, { passive: false });
     svg.addEventListener('touchend', function (e) { if (e.touches.length < 2) pinch = null; });
     svg.style.touchAction = 'none'; svg.style.cursor = 'grab';
   }
   function dist2(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
   function zoomControlsHTML(id) {
-    return '<div class="zoomctl" data-for="' + id + '"><button class="btn" data-z="in" title="Zoom in">+</button><button class="btn" data-z="out" title="Zoom out">−</button><button class="btn" data-z="reset" title="Reset">Reset</button><span class="small muted">Scroll, drag or pinch to zoom. Hover a square for the political label, a dot for the person.</span></div>';
+    return '<div class="zoomctl" data-for="' + id + '"><button class="btn" data-z="in" title="Zoom in">+</button><button class="btn" data-z="out" title="Zoom out">−</button><button class="btn" data-z="reset" title="Reset">Reset</button><span class="small muted">Scroll, drag or pinch to zoom. Hover or tap a square for its political label, a dot for the person.</span></div>';
   }
-  function wireZoomControls(container, svg, redraw) {
+  function wireZoomControls(container, svg) {
     container.addEventListener('click', function (e) {
       var b = e.target.closest('[data-z]'); if (!b) return;
       var z = b.getAttribute('data-z');
-      if (z === 'in') zoomBy(svg, 1.5, redraw); else if (z === 'out') zoomBy(svg, 1 / 1.5, redraw); else resetZoom(svg, redraw);
+      if (z === 'in') zoomBy(svg, 1.5); else if (z === 'out') zoomBy(svg, 1 / 1.5); else resetZoom(svg);
     });
   }
 
@@ -252,7 +295,7 @@
       var svg = $('cmpcompass');
       var pts = people.map(function (p) { return { id: p.id, econ: p.pos[0], auth: p.pos[1], label: p.name, sub: p.role, color: p.color, text: p.you ? '' : initials(p.name), r: p.you ? 9 : 13 }; });
       var redraw = function () { drawCompass(svg, pts); };
-      redraw(); attachZoom(svg, redraw); wireZoomControls(container, svg, redraw);
+      redraw(); attachZoom(svg); wireZoomControls(container, svg);
       people.forEach(function (p, i) { if (p.you || !p.wiki) return; thumb(p).then(function (u) { if (u && $('cmpcompass') === svg) { pts[i].img = u; redraw(); } }); });
     }
     hydrateAvatars(container);
@@ -324,7 +367,7 @@
       all(); onChange();
     }
     svg.onDot = function (p) { if (p.id !== 'you') pick(byId(p.id)); };
-    all(); attachZoom(svg, redraw); wireZoomControls(container, svg, redraw);
+    all(); attachZoom(svg); wireZoomControls(container, svg);
   }
 
   root.PCCompare = { state: state, render: render, renderGallery: renderGallery, drawCompass: drawCompass, selectedIds: selectedIds, setFromIds: setFromIds, byId: byId, regionFor: regionFor, REGIONS: REGIONS };

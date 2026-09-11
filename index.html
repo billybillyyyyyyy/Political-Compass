@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plain Compass: a political compass test that measures what you actually think</title>
 <meta name="description" content="A political compass test built to fix the problems with the popular ones: plain-English statements, balanced questions, a real neutral option, skip, and three lengths to choose from.">
+<meta property="og:title" content="Plain Compass">
+<meta property="og:description" content="A political compass test that measures what you actually think. Plain questions, balanced scoring, three lengths, and 90+ public figures to compare against.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#2f5bea">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%232f5bea%27/%3E%3Cpath d=%27M16 4v24M4 16h24%27 stroke=%27white%27 stroke-width=%273%27/%3E%3Ccircle cx=%2721%27 cy=%2711%27 r=%274%27 fill=%27white%27/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -27,6 +32,8 @@
     <h2>Choose a length</h2>
     <div class="lengths" id="lengths"></div>
     <p class="hint">You can answer with a keyboard: <b>1</b> to <b>5</b> for strongly disagree to strongly agree, <b>S</b> to skip, <b>M</b> to mark a statement as important, <b>Backspace</b> to go back.</p>
+
+    <p class="small"><a href="#figures" data-nav="figures">Browse the public figures first</a> if you want to see where Reagan, Thatcher, Mamdani and 90 others sit before you take it.</p>
 
     <h2>What you get</h2>
     <ul>
@@ -83,6 +90,7 @@
     <div class="share">
       <input id="rlink" readonly>
       <button class="btn" id="rcopy">Copy link</button>
+      <button class="btn hidden" id="rshare">Share</button>
     </div>
     <div class="share">
       <button class="btn primary" id="rretake">Retake</button>

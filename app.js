@@ -215,6 +215,12 @@
     if (navigator.clipboard) navigator.clipboard.writeText(inp.value).then(done, function () { document.execCommand('copy'); done(); });
     else { document.execCommand('copy'); done(); }
   });
+  if (navigator.share) {
+    $('rshare').classList.remove('hidden');
+    $('rshare').addEventListener('click', function () {
+      navigator.share({ title: 'My Plain Compass result', text: $('rquad').textContent + ' on Plain Compass', url: location.href }).catch(function () {});
+    });
+  }
   $('rretake').addEventListener('click', function () { startTest(state.length); });
   $('rlonger').addEventListener('click', function () {
     var next = state.length === 'quick' ? 'standard' : 'full';
